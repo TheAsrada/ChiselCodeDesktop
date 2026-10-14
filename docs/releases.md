@@ -2,6 +2,8 @@
 
 Desktop выпускается из `main` по новому неизменяемому тегу `v<package.json.version>`. Версии UI и ядра независимы. До тега обновите CHANGELOG и закрепите настоящий core release в `engine.lock.json`; placeholder или неполный manifest не допускаются.
 
+По AGENTS.md просьба владельца «сделай релиз» по умолчанию означает выпуск обоих проектов. Следуйте [общему порядку](https://github.com/TheAsrada/ChiselCode/blob/main/docs/contributors/desktop-sync.md): сначала успешный ChiselCode release, затем этот engine в Desktop, native main CI и новый desktop tag. Дополнительное согласование второго выпуска не требуется. Явная просьба выпустить только один проект меняет этот порядок для конкретного задания. Изменение исходников без просьбы о релизе не запускает публикацию.
+
 ## Автоматическая сборка
 
 Workflow [Desktop](../.github/workflows/desktop.yml) запускается также на push в main. Четыре native runner: Windows x64, Linux x64, macOS Apple Silicon и Intel. Каждый скачивает engine/SDK/skills с проверкой SHA-256, устанавливает зависимости из lock, проверяет TypeScript и архитектурные границы, собирает приложение и выполняет GUI acceptance.
