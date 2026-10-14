@@ -90,7 +90,7 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 				}
 			: {
 					content:
-						'## Изменение готово\n\nСоздан файл `desktop.txt`. Изменение прошло через подтверждение и сохранено в истории проекта.\n\n```ts\nconst interfaces = ["terminal", "desktop"]\n```\n\nТеперь можно проверить diff в панели справа.',
+						"## desktop.txt\n\nСоздан файл `desktop.txt`:\n\n```text\nChiselCode Desktop ✓\n```",
 				};
 		response.setHeader("Content-Type", "text/event-stream");
 		response.end(
@@ -119,9 +119,10 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 	try {
 		const page = await app.firstWindow();
 		await page.waitForLoadState("domcontentloaded");
-		await expect(
-			page.getByText("Готов к работе", { exact: true }),
-		).toBeVisible();
+		await expect(page.getByTestId("engine-status")).toHaveAttribute(
+			"data-state",
+			"ready",
+		);
 		expect(
 			await page.evaluate(
 				() => typeof (window as unknown as { require?: unknown }).require,
@@ -172,13 +173,14 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 			.click();
 		// Seed an existing project using the actual preload/engine API; no mocked dialog/backend.
 		await page.evaluate(async (path) => {
-				const project = await window.chisel.request("projects/open", { path });
-				localStorage.setItem("chisel:last-project", project.path);
+			const project = await window.chisel.request("projects/open", { path });
+			localStorage.setItem("chisel:last-project", project.path);
 		}, project);
 		await page.reload();
-		await expect(
-			page.getByText("Локальный проект", { exact: true }),
-		).toBeVisible();
+		await expect(page.getByTestId("project-picker")).toHaveAttribute(
+			"data-path",
+			/desktop-project$/,
+		);
 		await mkdir("docs/assets/screenshots", { recursive: true });
 		if (!packaged && process.platform === "linux")
 			await page.screenshot({ path: "docs/assets/screenshots/home.png" });
@@ -198,7 +200,7 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 			.getByRole("button", { name: "Разрешить один раз", exact: true })
 			.click();
 		await expect(
-			page.getByRole("heading", { name: "Изменение готово" }),
+			page.getByRole("heading", { name: "desktop.txt" }),
 		).toBeVisible();
 		await expect
 			.poll(async () => readFile(join(project, "desktop.txt"), "utf8"))
@@ -214,7 +216,7 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 		).toBeVisible();
 		await page.getByRole("button", { name: /WRITE: создай файл/ }).click();
 		await expect(
-			page.getByRole("heading", { name: "Изменение готово" }),
+			page.getByRole("heading", { name: "desktop.txt" }),
 		).toBeVisible();
 		await page.getByRole("button", { name: /Новая беседа/ }).click();
 		await page

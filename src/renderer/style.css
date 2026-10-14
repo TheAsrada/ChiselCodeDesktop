@@ -276,17 +276,6 @@ p {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
-.sidebar-empty {
-	padding: 36px 8px;
-	text-align: center;
-	color: var(--muted);
-	font-size: 10px;
-	line-height: 1.85;
-}
-.sidebar-empty > svg {
-	color: var(--faint);
-	margin-bottom: 9px;
-}
 .sidebar-bottom {
 	border-top: 1px solid var(--border);
 	padding: 10px 13px 0;
@@ -311,13 +300,6 @@ p {
 	font-size: 9px;
 	color: var(--muted);
 	padding: 16px 9px 14px;
-}
-.engine-status > small {
-	margin-left: auto;
-	font-size: 8px;
-	border: 1px solid var(--border);
-	border-radius: 3px;
-	padding: 0 4px;
 }
 .status-dot {
 	width: 5px;
@@ -427,24 +409,11 @@ p {
 	background: var(--accent);
 	opacity: 0.6;
 }
-.eyebrow {
-	font-size: 9px;
-	letter-spacing: 2px;
-	color: var(--muted);
-	font-weight: 550;
-	margin-bottom: 13px;
-}
 .welcome h1 {
 	font-size: clamp(26px, 2.6vw, 38px);
 	font-weight: 530;
 	letter-spacing: -1.3px;
 	line-height: 1.25;
-}
-.welcome > p {
-	margin-top: 15px;
-	font-size: 13px;
-	color: var(--subtle);
-	line-height: 1.85;
 }
 .open-project-button {
 	margin-top: 24px;
@@ -481,7 +450,7 @@ p {
 	border-radius: 9px;
 	gap: 9px;
 	position: relative;
-	min-height: 127px;
+	min-height: 99px;
 	transition:
 		border-color 0.15s,
 		transform 0.15s;
@@ -499,11 +468,6 @@ p {
 	font-size: 11px;
 	font-weight: 550;
 	line-height: 1.6;
-}
-.suggestions span {
-	font-size: 10px;
-	color: var(--muted);
-	line-height: 1.7;
 }
 .suggestions > button > svg:last-child {
 	position: absolute;
@@ -748,24 +712,6 @@ p {
 	color: var(--muted);
 	margin-top: 9px;
 	max-width: 220px;
-}
-.inspector-tip {
-	display: flex;
-	align-items: flex-start;
-	gap: 9px;
-	padding: 13px 12px;
-	border: 1px solid var(--border);
-	border-radius: 7px;
-	background: var(--surface-subtle);
-	margin-top: 35px;
-	color: var(--muted);
-}
-.inspector-tip > svg {
-	color: var(--subtle);
-}
-.inspector-tip p {
-	font-size: 10px;
-	line-height: 1.8;
 }
 .inspector-footer {
 	display: flex;

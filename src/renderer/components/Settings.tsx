@@ -10,7 +10,6 @@ import {
 	Plug,
 	Plus,
 	Settings2,
-	Shield,
 	Sparkles,
 	X,
 } from "lucide-react";
@@ -116,7 +115,7 @@ export default function Settings(props: Props) {
 			setKey("");
 			await props.onSaved();
 			setSelected(id);
-			setNotice("Профиль сохранён. Он доступен и в терминальном ChiselCode.");
+			setNotice("Профиль сохранён.");
 		});
 	}
 	async function saveMcp() {
@@ -141,7 +140,7 @@ export default function Settings(props: Props) {
 			setMcpId("");
 			setMcpUrl("");
 			await loadMcp();
-			setNotice("Подключение проверено, сервер сохранён.");
+			setNotice("Сервер сохранён.");
 		});
 	}
 	const tabs = [
@@ -196,9 +195,6 @@ export default function Settings(props: Props) {
 					{section === "connection" && (
 						<>
 							<h2>Модели и подключение</h2>
-							<p className="subtle">
-								Профили и API-ключи общие с терминальной версией.
-							</p>
 							<div className="profile-tabs">
 								{props.profiles.map((profile) => (
 									<button
@@ -276,9 +272,7 @@ export default function Settings(props: Props) {
 															profileId: selected,
 														}),
 													);
-													setNotice(
-														"Подключение проверено, список моделей загружен.",
-													);
+													setNotice("Модели загружены.");
 												})
 											}
 										>
@@ -311,18 +305,11 @@ export default function Settings(props: Props) {
 										placeholder={
 											props.profiles.find((item) => item.id === selected)
 												?.hasKey
-												? "Ключ сохранён. Оставьте поле пустым, чтобы сохранить его."
-												: "Вставьте ключ провайдера"
+												? "Сохранён. Пустое поле не меняет ключ."
+												: "API-ключ"
 										}
 									/>
 								</label>
-							</div>
-							<div className="info-note">
-								<Shield size={16} />
-								<span>
-									Сохранённый ключ хранится в ChiselCode и не возвращается в
-									интерфейс.
-								</span>
 							</div>
 							<button
 								className="primary-button"
@@ -341,9 +328,6 @@ export default function Settings(props: Props) {
 					{section === "appearance" && (
 						<>
 							<h2>Внешний вид</h2>
-							<p className="subtle">
-								Спокойный интерфейс, в котором главным остаётся код.
-							</p>
 							<div className="theme-options">
 								{["dark", "light", "system"].map((theme) => (
 									<button
@@ -383,9 +367,6 @@ export default function Settings(props: Props) {
 					{section === "mcp" && (
 						<>
 							<h2>MCP-серверы</h2>
-							<p className="subtle">
-								Подключайте инструменты через HTTP или локальную команду.
-							</p>
 							{!props.path && (
 								<p className="info-note">Сначала откройте проект.</p>
 							)}
@@ -473,9 +454,9 @@ export default function Settings(props: Props) {
 								)}
 							</div>
 							<p className="subtle">
-								Проверка запускает указанный сервер с правами вашего
-								пользователя. Вызовы инструментов проходят обычные разрешения
-								ChiselCode.
+								{mcpType === "stdio"
+									? "Проверка запускает локальную команду."
+									: "Проверка подключается к URL."}
 							</p>
 							<button
 								className="primary-button"
@@ -490,13 +471,9 @@ export default function Settings(props: Props) {
 					{section === "tools" && (
 						<>
 							<h2>Инструменты</h2>
-							<p className="subtle">
-								Изменения этих настроек доступны и в CLI.
-							</p>
 							<div className="setting-row">
 								<div>
 									<strong>Поиск в интернете</strong>
-									<p>Актуальные источники и документация</p>
 								</div>
 								<button
 									className="toggle-button"
@@ -531,19 +508,8 @@ export default function Settings(props: Props) {
 							<div className="setting-row">
 								<div>
 									<strong>Анализ кода (LSP)</strong>
-									<p>Настройка языковых серверов</p>
 								</div>
-								<span className="subtle">
-									Управление через /lsp-status и /lsp-restart
-								</span>
-							</div>
-							<div className="info-note">
-								<Shield size={17} />
-								<span>
-									Plan использует инструменты чтения. Build вносит изменения с
-									выбранным режимом разрешений. Shell выполняется с правами
-									пользователя.
-								</span>
+								<span className="subtle">/lsp-status · /lsp-restart</span>
 							</div>
 						</>
 					)}
@@ -553,7 +519,6 @@ export default function Settings(props: Props) {
 								C<span>_</span>
 							</div>
 							<h2>ChiselCode Desktop</h2>
-							<p className="subtle">От задачи до проверяемого изменения.</p>
 							<div className="version-table">
 								<div>
 									<span>Desktop</span>
@@ -602,7 +567,7 @@ export default function Settings(props: Props) {
 							</button>
 							{update.message && <p className="subtle">{update.message}</p>}
 							{update.state === "current" && (
-								<p className="success-text">Установлена актуальная версия.</p>
+								<p className="success-text">Обновлений нет.</p>
 							)}
 							<button
 								className="text-button"
@@ -616,8 +581,7 @@ export default function Settings(props: Props) {
 								Выпуски на GitHub
 							</button>
 							<p className="subtle">
-								Для первого beta-выпуска установщики распространяются без
-								подписи издателя. Подробности — в документации по установке.
+								Beta: Windows без подписи издателя, macOS без notarization.
 							</p>
 						</>
 					)}

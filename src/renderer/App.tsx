@@ -68,21 +68,18 @@ const suggestions = [
 	{
 		icon: Search,
 		title: "Разобраться в проекте",
-		description: "Структура, архитектура и точки входа",
 		prompt:
 			"Изучи структуру проекта, объясни его архитектуру и основные точки входа. Пока ничего не меняй.",
 	},
 	{
 		icon: Code2,
 		title: "Найти и исправить ошибку",
-		description: "От причины к проверенному изменению",
 		prompt:
 			"Помоги найти и исправить ошибку в проекте. Начни с изучения кода и предложи план проверки.",
 	},
 	{
 		icon: ShieldCheck,
 		title: "Проверить изменения",
-		description: "Посмотреть diff и возможные проблемы",
 		prompt:
 			"Проверь текущие изменения Git. Найди ошибки, риски и пропущенные проверки, со ссылками на файлы.",
 	},
@@ -304,7 +301,7 @@ export default function App() {
 						[event.sessionId]: {
 							turnId: event.turnId,
 							text: "",
-							phase: "Изучает задачу",
+							phase: "Выполняется",
 							tools: [],
 						},
 					}));
@@ -315,19 +312,19 @@ export default function App() {
 						const next = { ...value, tools: [...value.tools] };
 						if (data.type === "provider_text_delta") {
 							next.text += String(data.text ?? "");
-							next.phase = "Пишет ответ";
+							next.phase = "Ответ";
 						}
 						if (data.type === "turn_state")
 							next.phase =
 								data.state === "awaiting_approval"
 									? "Ждёт подтверждения"
 									: data.state === "calling_provider"
-										? "Думает над задачей"
+										? "Запрос к модели"
 										: data.state === "executing_tools"
-											? "Работает с проектом"
+											? "Выполнение инструментов"
 											: next.phase;
 						if (data.type === "context_compaction_started")
-							next.phase = "Сжимает контекст";
+							next.phase = "Сжатие контекста";
 						if (data.type === "tool_started") {
 							next.phase = String(data.name ?? "Выполняет инструмент");
 							next.tools.push({
@@ -582,9 +579,7 @@ export default function App() {
 								<span>/</span>
 								{session?.title ?? "Новая беседа"}
 							</>
-						) : (
-							"Пространство для работы с кодом"
-						)}
+						) : null}
 					</div>
 					{info?.platform !== "darwin" && (
 						<div className="window-controls">
@@ -613,6 +608,8 @@ export default function App() {
 					<div className="sidebar-top">
 						<button
 							className="project-picker"
+							data-testid="project-picker"
+							data-path={project?.path}
 							onClick={() => setProjectMenu(!projectMenu)}
 						>
 							<span className="project-icon">
@@ -622,9 +619,6 @@ export default function App() {
 								<strong>
 									{project ? name(project.path) : "Открыть проект"}
 								</strong>
-								<small>
-									{project ? "Локальный проект" : "Выберите рабочую папку"}
-								</small>
 							</span>
 							<ChevronDown size={14} />
 						</button>
@@ -693,16 +687,6 @@ export default function App() {
 									<span className="session-label">{item.title}</span>
 								</button>
 							))}
-						{sessions.length === 0 && (
-							<div className="sidebar-empty">
-								<MessageSquare size={20} />
-								<p>
-									Здесь появятся ваши беседы
-									<br />
-									по этому проекту.
-								</p>
-							</div>
-						)}
 					</nav>
 					<div className="sidebar-bottom">
 						<button onClick={() => setSettingsOpen(true)}>
@@ -723,16 +707,20 @@ export default function App() {
 							Документация
 							<ArrowRight size={13} />
 						</button>
-						<div className="engine-status">
+						<div
+							className="engine-status"
+							data-testid="engine-status"
+							data-state={ready ? "ready" : fatal ? "error" : "starting"}
+							title="Версия ядра ChiselCode"
+						>
 							<span className={`status-dot ${ready ? "" : "offline"}`} />
 							<span>
 								{ready
-									? "Готов к работе"
+									? info?.engine.engineVersion
 									: fatal
-										? "Ядро недоступно"
-										: "Запуск ядра…"}
+										? "Ошибка"
+										: "Запуск…"}
 							</span>
-							<small>beta</small>
 						</div>
 					</div>
 				</aside>
@@ -772,8 +760,7 @@ export default function App() {
 										if (!project || !session) return;
 										setDetail({
 											title: "Удалить беседу?",
-											content:
-												"История будет удалена. Чтобы подтвердить, нажмите кнопку удаления ниже.",
+											content: "История беседы будет удалена.",
 										});
 									}}
 								>
@@ -799,12 +786,7 @@ export default function App() {
 									<Code2 size={38} />
 									<span />
 								</div>
-								<span className="eyebrow">ВАШ ПРОЕКТ. ВАШИ МОДЕЛИ.</span>
-								<h1>Что будем создавать?</h1>
-								<p>
-									Разберёмся в коде, найдём решение
-									<br />и доведём изменения до результата.
-								</p>
+								<h1>Новая беседа</h1>
 								{!project && (
 									<button
 										className="open-project-button"
@@ -828,7 +810,6 @@ export default function App() {
 										>
 											<item.icon size={20} />
 											<strong>{item.title}</strong>
-											<span>{item.description}</span>
 											<ArrowUp size={13} />
 										</button>
 									))}
@@ -839,7 +820,7 @@ export default function App() {
 										onClick={() => setSettingsOpen(true)}
 									>
 										<KeyHint />
-										Подключите модель, чтобы начать
+										Подключить модель
 										<ChevronRight size={14} />
 									</button>
 								)}
@@ -955,9 +936,7 @@ export default function App() {
 								ref={composer}
 								aria-label="Задача для ChiselCode"
 								placeholder={
-									project
-										? "Опишите задачу, задайте вопрос или введите /команду…"
-										: "Начните с выбора проекта…"
+									project ? "Сообщение или /команда…" : "Открыть проект…"
 								}
 								value={draft}
 								onChange={(event) => setDraft(event.target.value)}
@@ -1071,11 +1050,6 @@ export default function App() {
 							<span>
 								<kbd>Enter</kbd> отправить · <kbd>Shift Enter</kbd> новая строка
 							</span>
-							<span>
-								{mode === "plan"
-									? "Только чтение проекта"
-									: "Изменения под вашим контролем"}
-							</span>
 						</div>
 					</div>
 				</main>
@@ -1167,9 +1141,7 @@ export default function App() {
 																	.then((value) =>
 																		setDetail({
 																			title: file.path,
-																			patch:
-																				value.patch ||
-																				"В Git diff пока нет фрагмента для этого файла. Новый файл можно проверить через агент.",
+																			patch: value.patch || "Diff отсутствует.",
 																		}),
 																	)
 																	.catch(report);
@@ -1194,21 +1166,14 @@ export default function App() {
 												<GitBranch size={25} />
 											</div>
 											<strong>
-												{project && git
-													? "Рабочая папка чистая"
-													: "Изменения появятся здесь"}
+												{project
+													? git
+														? "Нет изменений"
+														: "Git недоступен"
+													: "Проект не выбран"}
 											</strong>
-											<p>
-												{project && git
-													? "В Git нет незакоммиченных изменений."
-													: "Откройте проект и начните задачу. Здесь можно проверить изменения файлов."}
-											</p>
 										</div>
 									)}
-									<div className="inspector-tip">
-										<ShieldCheck size={16} />
-										<p>Проверяйте diff перед подтверждением изменений.</p>
-									</div>
 								</>
 							)}
 							{inspectorTab === "tasks" && (
@@ -1286,11 +1251,7 @@ export default function App() {
 											<div>
 												<Terminal size={25} />
 											</div>
-											<strong>Пока нет фоновых задач</strong>
-											<p>
-												Агент может запускать помощников и команды. Их состояние
-												будет видно здесь.
-											</p>
+											<strong>Нет задач</strong>
 										</div>
 									)}
 								</>

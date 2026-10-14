@@ -1,7 +1,5 @@
 # ChiselCode Desktop
 
-**От задачи до проверяемого изменения — в отдельном приложении.**
-
 Графический клиент [ChiselCode](https://github.com/TheAsrada/ChiselCode): проекты, история бесед, потоковый ответ, модели разных провайдеров и просмотр изменений перед подтверждением. Терминальная версия продолжает развиваться; оба интерфейса используют общее ядро.
 
 [Скачать beta](https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.1) · [Документация](docs/README.md) · [Архитектура](docs/architecture.md) · [CHANGELOG](CHANGELOG.md)
