@@ -15,8 +15,8 @@
 | Subagents | Core submission; список и live inspect/cancel владельца |
 | Background tasks | Core execution/commands; список, live output/stop владельца, receipts в истории |
 | Worktrees | Core commands; созданную папку можно открыть отдельным проектом |
-| LSP | Runtime, `/lsp-status`/`/lsp-restart`; расширенные формы — CLI |
-| Внешние extensions | Загружает общий core с прежним trust; UI contribution renderer развивается отдельно |
+| LSP | Runtime, `/lsp-status`/`/lsp-restart`; формы Auto/Custom/Off и project trust — Настройки → Расширения |
+| Внешние extensions | Настройки → Расширения: папка/ZIP, exact trust, состояния, параметры, update/rollback и remove через core; UI contributions развиваются отдельно |
 | `/btw` | Явно сообщает о недоступной desktop lane; используйте CLI/отдельную беседу |
 | Облако, SSH, sync между устройствами | В scope beta не входят |
 | Полноценный IDE editor/inline autocomplete | В scope beta не входят |

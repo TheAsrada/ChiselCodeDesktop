@@ -21,7 +21,19 @@ let startup: Promise<void> = Promise.resolve();
 let startupError = "";
 let stopping = false;
 const active = new Set<string>();
+const selectedPackages = new Set<string>();
 const allowed = new Set<Method>([
+	"extensions/list",
+	"extensions/prepare",
+	"extensions/operation",
+	"extensions/cancel",
+	"extensions/commit",
+	"extensions/setEnabled",
+	"extensions/settings/read",
+	"extensions/settings/save",
+	"extensions/builtin/read",
+	"extensions/builtin/save",
+	"extensions/lsp/action",
 	"projects/list",
 	"projects/open",
 	"profiles/list",
@@ -67,10 +79,25 @@ function bind() {
 			await startup;
 			if (!engine || !hello)
 				throw new Error(startupError || "Ядро недоступно.");
+			if (
+				method.startsWith("extensions/") &&
+				!hello.capabilities.includes("extension-management")
+			)
+				throw new Error(
+					"Это ядро не поддерживает управление расширениями. Обновите приложение.",
+				);
+			if (method === "extensions/prepare") {
+				const source = (params as RequestMap["extensions/prepare"]["params"])
+					.source;
+				if (source && !selectedPackages.delete(source))
+					throw new Error("Выберите папку или ZIP через системный диалог.");
+			}
 			return engine.client.request(
 				method,
 				params,
-				method.startsWith("mcp/") ? 130_000 : 30_000,
+				method.startsWith("mcp/") || method.startsWith("extensions/")
+					? 130_000
+					: 30_000,
 			);
 		},
 	);
@@ -91,6 +118,41 @@ function bind() {
 			properties: ["openDirectory"],
 		});
 		return result.canceled ? null : (result.filePaths[0] ?? null);
+	});
+	ipcMain.handle("native:choose-extension", async (event, kind: unknown) => {
+		sender(event);
+		if (kind !== "directory" && kind !== "zip")
+			throw new Error("Выберите папку или ZIP.");
+		const result = await dialog.showOpenDialog(window!, {
+			title:
+				kind === "directory"
+					? "Подготовленная папка расширения"
+					: "ZIP расширения",
+			properties: [kind === "directory" ? "openDirectory" : "openFile"],
+			...(kind === "zip"
+				? { filters: [{ name: "Пакет расширения", extensions: ["zip"] }] }
+				: {}),
+		});
+		const source = result.canceled ? undefined : result.filePaths[0];
+		if (!source) return null;
+		if (selectedPackages.size >= 16) selectedPackages.clear();
+		selectedPackages.add(source);
+		return source;
+	});
+	ipcMain.handle("native:restart", async (event) => {
+		sender(event);
+		await startup;
+		if (
+			!engine ||
+			active.size ||
+			(await engine.client.request("system/status", {})).busy
+		)
+			throw new Error(
+				"Дождитесь задач или остановите их и фоновые процессы перед перезапуском.",
+			);
+		await engine.close();
+		app.relaunch();
+		app.quit();
 	});
 	ipcMain.handle("native:open-external", async (event, value: unknown) => {
 		sender(event);
@@ -219,7 +281,9 @@ async function createWindow() {
 		readFileSync(
 			app.isPackaged
 				? join(__dirname, "../build-info.json")
-				: resolve("engine.lock.json"),
+				: process.env.CHISEL_DESKTOP_CANDIDATE_LOCK
+					? resolve(process.env.CHISEL_DESKTOP_CANDIDATE_LOCK)
+					: resolve("engine.lock.json"),
 			"utf8",
 		),
 	);

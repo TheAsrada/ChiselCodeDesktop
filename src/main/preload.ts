@@ -14,6 +14,9 @@ const bridge: ChiselBridge = {
 	onUpdate: (listener) => listen("native:update", listener),
 	info: () => ipcRenderer.invoke("native:info"),
 	openProject: () => ipcRenderer.invoke("native:open-project"),
+	chooseExtension: (kind) =>
+		ipcRenderer.invoke("native:choose-extension", kind),
+	restart: () => ipcRenderer.invoke("native:restart"),
 	openExternal: (url) => ipcRenderer.invoke("native:open-external", url),
 	copy: (text) => ipcRenderer.invoke("native:copy", text),
 	window: (action) => ipcRenderer.invoke("native:window", action),

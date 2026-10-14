@@ -475,6 +475,40 @@
 	color: var(--muted);
 	font-size: 12px;
 }
+
+.extensions-toolbar, .extension-source, .extension-filters, .extension-operation, .extension-trust, .extension-restart {
+	display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.extension-search { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 150px; }
+.extension-search input { width: 100%; min-width: 0; }
+.extension-filters button.selected, .extension-row.selected { background: var(--selected); color: var(--text); }
+.extension-columns { display: grid; grid-template-columns: minmax(150px, 0.8fr) minmax(240px, 1.2fr); gap: 18px; min-height: 290px; }
+.extension-list { border-right: 1px solid var(--border); padding-right: 12px; min-width: 0; }
+.extension-row { width: 100%; text-align: left; display: flex; align-items: flex-start; flex-direction: column; gap: 5px; margin-bottom: 6px; border-radius: 12px; padding: 11px 12px; }
+.extension-row span { font-weight: 650; overflow-wrap: anywhere; }
+.extension-row small, .settings-hint { color: var(--muted); font-size: 12px; }
+.extension-details { min-width: 0; }
+.extension-details h3, .extension-review h3 { margin-top: 2px; }
+.extension-details dl, .extension-review dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; font-size: 12px; }
+.extension-details dt, .extension-review dt { color: var(--muted); }
+.extension-details dd, .extension-review dd { margin: 0; overflow-wrap: anywhere; }
+.digest { font-family: "JetBrains Mono", monospace; font-size: 11px; overflow-wrap: anywhere; }
+.extension-details .settings-actions, .extension-review .settings-actions, .extension-settings .settings-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.extension-version { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.extension-trust { font-size: 13px; }
+.extension-trust input { width: 16px; height: 16px; }
+.extension-files { padding-left: 20px; font-size: 12px; }
+.extension-files li { margin: 8px 0; overflow-wrap: anywhere; }
+.extension-files .digest { display: block; color: var(--muted); }
+.extension-restart { margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12px; }
+.extension-state.error, .extension-state.not_trusted, .extension-state.restart_required { color: var(--amber); }
+.form-grid textarea { width: 100%; min-height: 65px; background: var(--surface-subtle); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 9px; }
+.extensions .form-grid input[type="checkbox"] { width: 18px; height: 18px; }
+@media (max-width: 1080px) {
+	.extension-columns { grid-template-columns: minmax(140px, 0.7fr) minmax(200px, 1fr); gap: 10px; }
+	.extension-row { padding: 9px; }
+	.extension-details dl, .extension-review dl { grid-template-columns: 1fr; gap: 4px; }
+}
 .input-action {
 	display: flex;
 	gap: 8px;

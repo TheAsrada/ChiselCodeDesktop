@@ -22,9 +22,18 @@ Main запускает встроенный engine с pipe stdin/stdout и вы
 | mcp/list/save/action | Existing controller и model trust |
 | tasks/list/inspect/cancel | Owned task controls |
 | settings/read/patch | Узкие настройки Web/LSP |
+| extensions/list/prepare/operation/cancel/commit | Пассивный каталог, progress, exact review и core candidate lifecycle |
+| extensions/setEnabled/settings/read/settings/save | Желаемое состояние и декларативные global per-ID параметры; секреты write-only |
+| extensions/builtin/read/builtin/save/lsp/action | Реальные core stores LSP/subagents/background, revisions и проектные ограничения |
 | system/status, shutdown | Native lifecycle, renderer не управляет shutdown |
 
 В первой beta turn/start принимает одну задачу; следующая сохраняется в клиентской очереди. Foreground slash commands исполняются через runExtensionCommand, skill commands расширяются через существующий skill loader. `/btw` явно сообщает о недоступной графической lane; его нельзя считать обычным agent prompt.
+
+## Управление расширениями
+
+Protocol 1.1 / SDK 1.1.0 добавляет capabilities `extension-management`, `extension-settings`. Review содержит точные digest/revision и requestId, но не prepared handle. Commit authority остаётся в engine; stale/cancelled review требует новой проверки. Polling `extensions/operation` возвращает bounded progress, terminal result или ошибку и не вызывает модель.
+
+Native bridge выбирает только directory либо ZIP. Одноразовый path grant разрешает `extensions/prepare` для выбранного источника; renderer не читает файлы и не реализует installer. Явный restart проверяет активные задачи; production handshake остаётся обязательным. При отсутствии новой capability GUI показывает недоступность раздела.
 
 ## События
 

@@ -31,6 +31,8 @@ export interface ChiselBridge {
 	onUpdate(listener: (status: UpdateStatus) => void): () => void;
 	info(): Promise<{ version: string; platform: string; engine: Hello }>;
 	openProject(): Promise<string | null>;
+	chooseExtension(kind: "directory" | "zip"): Promise<string | null>;
+	restart(): Promise<void>;
 	openExternal(url: string): Promise<void>;
 	copy(text: string): Promise<void>;
 	window(action: "minimize" | "maximize" | "close"): Promise<void>;

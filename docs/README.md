@@ -5,6 +5,7 @@
 - [Установка и обновление](installation.md)
 - [Первый запуск и рабочий цикл](getting-started.md)
 - [Возможности и границы beta](features.md)
+- [Установка, доверие и настройки расширений](extensions.md)
 - [Решение проблем](troubleshooting.md)
 
 ## Разработчику
@@ -19,5 +20,6 @@
 - [Референсы и решения по интерфейсу](references.md)
 - [Дальнейшее развитие](roadmap.md)
 - [Проверки выпусков и установщиков](verification.md)
+- [Проверки настроек расширений и кадры](verification-extensions.md)
 
 Публичные изменения: [CHANGELOG](../CHANGELOG.md). Архитектурные решения: [ADR](adr/README.md).

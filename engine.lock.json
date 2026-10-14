@@ -1,37 +1,37 @@
 {
   "schemaVersion": 1,
   "repository": "TheAsrada/ChiselCode",
-  "tag": "v0.6.29",
-  "engineVersion": "0.6.29",
-  "sourceCommit": "b9fc6dfcc6c62743c65a5bb311ccb5e8ca7d679f",
+  "tag": "v0.6.30",
+  "engineVersion": "0.6.30",
+  "sourceCommit": "9f3858c0d67bf8a0ccc0c22ca6bcec3829a8002a",
   "protocol": {
     "major": 1,
-    "minor": 0
+    "minor": 1
   },
   "assets": {
     "darwin-x64": {
       "name": "chisel-engine-darwin-x64",
-      "sha256": "2f9d0af6f84f407ae46c9d300ee07c9e5046d7914ff6300ace0b1c9f86f6cd26"
+      "sha256": "bba1858ebf4c8ac20010e2fe8cba75c368b39e8adb5b9d1cd7bb334e221b8867"
     },
     "sdk": {
-      "name": "chisel-desktop-sdk-1.0.0.tgz",
-      "sha256": "69ec5ef7c1e46243396343da0903ac0014939a399846cc97620cb9fa77b372fe"
+      "name": "chisel-desktop-sdk-1.1.0.tgz",
+      "sha256": "4013a8f02b30edb062d9a6277272333a502009d8bb99aa7954208ee0d4b0cab3"
     },
     "darwin-arm64": {
       "name": "chisel-engine-darwin-arm64",
-      "sha256": "77609f37c10bd0ccc2d6c78e98adb0a105e7b42ad9da5f5e98c1b621e907eb86"
+      "sha256": "1a934f3fbf7202362d0e6e70d54bb8ebac04286a8d3d7ae6882dc5dc3654b708"
     },
     "linux-x64": {
       "name": "chisel-engine-linux-x64",
-      "sha256": "809157ee5db201821faf4f277c6bd7c5f06e75befc0bd3489459c1d779de3206"
+      "sha256": "12bcc3d752df288d9bd310d742577a49ddde03a3b51f1ce96e7158421d83b4e7"
     },
     "win32-x64": {
       "name": "chisel-engine-win32-x64.exe",
-      "sha256": "18d898255b9fc94c143e02e5f07fe9cc2d9b1188b9112500743eebe12407d4c0"
+      "sha256": "6e0bdd3c978b716e1389a2082042dafc3695ab28d3923320f0d80b14fc0dfa4d"
     },
     "skills": {
       "name": "chisel-engine-skills.tgz",
-      "sha256": "72cf95dc2b4de9c73123346a5747a2a92b6ae57dd21aa67a41448a193b2ade71"
+      "sha256": "585dd2e7f5556b83b7b2f44dee8fcb8b43d0a00fa66a217d0b4af96652ebfbb3"
     }
   }
 }

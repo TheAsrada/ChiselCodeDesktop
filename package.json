@@ -1,6 +1,6 @@
 {
 	"name": "chiselcode-desktop",
-	"version": "0.1.0-beta.3",
+	"version": "0.1.0-beta.4",
 	"description": "ChiselCode Desktop — графический клиент общего ядра ChiselCode",
 	"private": true,
 	"type": "module",
@@ -42,6 +42,7 @@
 		"electron": "44.7.0",
 		"electron-builder": "26.15.3",
 		"esbuild": "0.28.2",
+		"fflate": "0.8.2",
 		"sharp": "0.34.5",
 		"typescript": "7.0.2",
 		"vite": "8.3.4"

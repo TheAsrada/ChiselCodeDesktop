@@ -123,7 +123,25 @@ export default function App() {
 	const [mode, setMode] = useState<StartTurn["mode"]>("build");
 	const [permissions, setPermissions] =
 		useState<StartTurn["approvalMode"]>("default");
-	const [drafts, setDrafts] = useState<Record<string, string>>({});
+	const [drafts, setDrafts] = useState<Record<string, string>>(() => {
+		try {
+			const value: unknown = JSON.parse(
+				localStorage.getItem("chisel:drafts") ?? "{}",
+			);
+			if (value && typeof value === "object" && !Array.isArray(value))
+				return Object.fromEntries(
+					Object.entries(value).filter(
+						([key, text]) =>
+							key.length <= 4096 &&
+							typeof text === "string" &&
+							text.length <= 256000,
+					),
+				) as Record<string, string>;
+		} catch {
+			/* Ignore an invalid client draft; durable history remains in core. */
+		}
+		return {};
+	});
 	const [runs, setRuns] = useState<Record<string, Run>>({});
 	const [queue, setQueue] = useState<Record<string, StartTurn[]>>({});
 	const [approvals, setApprovals] = useState<Approval[]>([]);
@@ -173,6 +191,16 @@ export default function App() {
 			? approval.preview
 			: "";
 	const report = useCallback((error: unknown) => setError(text(error)), []);
+	useEffect(() => {
+		localStorage.setItem("chisel:drafts", JSON.stringify(drafts));
+	}, [drafts]);
+	useEffect(() => {
+		if (project && session)
+			localStorage.setItem(
+				"chisel:last-session",
+				JSON.stringify({ path: project.path, id: session.id }),
+			);
+	}, [project?.path, session?.id]);
 	selected.current = { path: project?.path ?? "", id: session?.id ?? "" };
 	useEffect(() => {
 		const apply = () =>
@@ -237,6 +265,10 @@ export default function App() {
 			sessionId: item.id,
 		});
 		setSession(value);
+		localStorage.setItem(
+			"chisel:last-session",
+			JSON.stringify({ path: project.path, id: value.id }),
+		);
 		selected.current = { path: project.path, id: value.id };
 		setProfileId(value.profileId);
 		setModel(value.model);
@@ -254,6 +286,7 @@ export default function App() {
 		composer.current?.focus();
 	}
 	function newConversation() {
+		localStorage.removeItem("chisel:last-session");
 		setSession(undefined);
 		setTasks({});
 		setVisible(100);
@@ -301,8 +334,28 @@ export default function App() {
 			const recent = await window.chisel.request("projects/list", {});
 			setProjects(recent);
 			const last = localStorage.getItem("chisel:last-project");
-			if (last && recent.some((item) => item.path === last))
+			if (last && recent.some((item) => item.path === last)) {
 				await openProject(last);
+				try {
+					const saved = JSON.parse(
+						localStorage.getItem("chisel:last-session") ?? "null",
+					) as { path?: string; id?: string } | null;
+					if (saved?.path === last && saved.id) {
+						const value = await window.chisel.request("sessions/read", {
+							path: last,
+							sessionId: saved.id,
+						});
+						setSession(value);
+						selected.current = { path: last, id: value.id };
+						setProfileId(value.profileId);
+						setModel(value.model);
+						setMode(value.mode);
+						setPermissions(value.approvalMode);
+					}
+				} catch {
+					localStorage.removeItem("chisel:last-session");
+				}
+			}
 		})().catch((error) => {
 			if (alive) setFatal(text(error));
 		});
@@ -1438,6 +1491,20 @@ export default function App() {
 					providers={providers}
 					version={info?.version}
 					engineVersion={info?.engine.engineVersion}
+					capabilities={info?.engine.capabilities}
+					onRestart={async () => {
+						if (Object.values(queueRef.current).some((items) => items.length))
+							throw new Error(
+								"Сначала завершите или очистите очередь сообщений.",
+							);
+						localStorage.setItem("chisel:drafts", JSON.stringify(drafts));
+						if (project && session)
+							localStorage.setItem(
+								"chisel:last-session",
+								JSON.stringify({ path: project.path, id: session.id }),
+							);
+						await window.chisel.restart();
+					}}
 					theme={theme}
 					onTheme={setTheme}
 					onClose={() => setSettingsOpen(false)}

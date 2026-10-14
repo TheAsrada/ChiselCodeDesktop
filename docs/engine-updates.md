@@ -6,6 +6,8 @@ Engine, SDK и навыки собираются в ChiselCode из того ж�
 
 ## Версии
 
+В исходниках Desktop 0.1.0-beta.4 закреплён [ChiselCode 0.6.30](https://github.com/TheAsrada/ChiselCode/releases/tag/v0.6.30), source `9f3858c0d67bf8a0ccc0c22ca6bcec3829a8002a`, protocol 1.1 и SDK 1.1.0. Все шесть engine/SDK/skills hashes находятся в [engine.lock.json](../engine.lock.json). Capabilities `extension-management` и `extension-settings` обслуживают [каталог и формы расширений](extensions.md). Пакеты extension SDK API v1 и Session schema 3 сохраняют совместимость.
+
 | Версия | Назначение |
 |---|---|
 | Desktop SemVer | Пользовательский выпуск и установщики |

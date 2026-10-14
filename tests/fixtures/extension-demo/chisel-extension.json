@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "example.settings-demo",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entry": "index.mjs",
+  "displayName": "Пример с настройками",
+  "description": "Параметры, инструмент чтения и команда /demo-settings",
+  "chiselVersion": ">=0.6.30 <0.7.0",
+  "settings": {
+    "fields": [
+      {
+        "name": "message",
+        "type": "string",
+        "label": "Сообщение",
+        "default": "Привет",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      {
+        "name": "count",
+        "type": "number",
+        "label": "Повторения",
+        "default": 2,
+        "integer": true,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "name": "loud",
+        "type": "boolean",
+        "label": "Заглавные буквы",
+        "default": false
+      },
+      {
+        "name": "style",
+        "type": "enum",
+        "label": "Формат",
+        "default": "short",
+        "options": [
+          { "value": "short", "label": "Кратко" },
+          { "value": "long", "label": "С версией" }
+        ]
+      },
+      {
+        "name": "access",
+        "type": "string",
+        "label": "Секрет примера",
+        "secret": true,
+        "maxLength": 200
+      }
+    ]
+  }
+}

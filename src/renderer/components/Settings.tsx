@@ -9,6 +9,7 @@ import {
 	Loader2,
 	Plug,
 	Plus,
+	Package,
 	Settings2,
 	Sparkles,
 	X,
@@ -16,12 +17,15 @@ import {
 import type { Json, Profile, Provider } from "@chiselcode/desktop-sdk";
 import type { UpdateStatus } from "../../shared/bridge.js";
 import { BrandMark } from "./Brand.js";
+import Extensions from "./Extensions.js";
 interface Props {
 	path?: string;
 	profiles: Profile[];
 	providers: Provider[];
 	version?: string;
 	engineVersion?: string;
+	capabilities?: string[];
+	onRestart(): Promise<void>;
 	theme: string;
 	onTheme(value: string): void;
 	onClose(): void;
@@ -39,6 +43,13 @@ type McpItem = {
 };
 export default function Settings(props: Props) {
 	const [section, setSection] = useState("connection");
+	const [extensionDirty, setExtensionDirty] = useState(false),
+		[extensionBusy, setExtensionBusy] = useState(false),
+		[confirmClose, setConfirmClose] = useState(false);
+	const close = () => {
+		if (extensionDirty || extensionBusy) setConfirmClose(true);
+		else props.onClose();
+	};
 	const [selected, setSelected] = useState(props.profiles[0]?.id ?? "");
 	const [provider, setProvider] = useState(props.providers[0]?.id ?? "openai");
 	const [id, setId] = useState("my-profile");
@@ -147,6 +158,7 @@ export default function Settings(props: Props) {
 	const tabs = [
 		{ id: "connection", icon: KeyRound, label: "Модели и подключение" },
 		{ id: "appearance", icon: Sparkles, label: "Внешний вид" },
+		{ id: "extensions", icon: Package, label: "Расширения" },
 		{ id: "mcp", icon: Plug, label: "MCP-серверы" },
 		{ id: "tools", icon: Globe, label: "Инструменты" },
 		{ id: "about", icon: Settings2, label: "О приложении" },
@@ -154,8 +166,18 @@ export default function Settings(props: Props) {
 	return (
 		<div
 			className="modal-backdrop"
+			onKeyDown={(event) => {
+				if (
+					event.key === "Escape" ||
+					((event.ctrlKey || event.metaKey) && event.key === ",")
+				) {
+					event.preventDefault();
+					event.stopPropagation();
+					close();
+				}
+			}}
 			onMouseDown={(event) => {
-				if (event.target === event.currentTarget) props.onClose();
+				if (event.target === event.currentTarget) close();
 			}}
 		>
 			<section
@@ -189,10 +211,40 @@ export default function Settings(props: Props) {
 					<button
 						aria-label="Закрыть настройки"
 						className="icon-button modal-close"
-						onClick={props.onClose}
+						onClick={close}
 					>
 						<X size={19} />
 					</button>
+					{confirmClose && (
+						<div
+							className="settings-notice"
+							role="alertdialog"
+							aria-label="Закрыть настройки"
+						>
+							<p>
+								{extensionBusy
+									? "Закрытие отменит открытую операцию расширений; сохранение уже начавшегося commit проверит ядро."
+									: "Есть несохранённые настройки расширения."}
+							</p>
+							<button onClick={() => setConfirmClose(false)}>Остаться</button>
+							<button onClick={props.onClose}>
+								Закрыть{" "}
+								{extensionDirty ? "без сохранения" : "и отменить операцию"}
+							</button>
+						</div>
+					)}
+					<div hidden={section !== "extensions"}>
+						<Extensions
+							path={props.path}
+							available={
+								props.capabilities?.includes("extension-management") === true
+							}
+							active={section === "extensions"}
+							onDirty={setExtensionDirty}
+							onBusy={setExtensionBusy}
+							onRestart={props.onRestart}
+						/>
+					</div>
 					{section === "connection" && (
 						<>
 							<h2>Модели и подключение</h2>
