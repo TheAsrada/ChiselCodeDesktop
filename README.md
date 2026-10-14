@@ -4,7 +4,9 @@
 
 [Скачать beta](https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.2) · [Документация](docs/README.md) · [Архитектура](docs/architecture.md) · [CHANGELOG](CHANGELOG.md)
 
-![Настоящий интерфейс ChiselCode Desktop](docs/assets/screenshots/chat.png)
+![Настоящий интерфейс ChiselCode Desktop](docs/assets/screenshots/home.png)
+
+Скриншоты показывают оформление текущего `main`, готовящееся к следующему выпуску. Установщики beta.2 содержат предыдущий интерфейс. [Дизайн и рабочие экраны](docs/design.md).
 
 ## Первый запуск
 

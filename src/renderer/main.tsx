@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import "@fontsource-variable/inter";
+import "@fontsource-variable/manrope";
 import "@fontsource/jetbrains-mono/400.css";
 import App from "./App.js";
 import "./style.css";

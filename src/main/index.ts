@@ -178,7 +178,7 @@ async function createWindow() {
 		minWidth: 900,
 		minHeight: 640,
 		title: "ChiselCode Desktop",
-		backgroundColor: "#101115",
+		backgroundColor: "#dfe2dc",
 		titleBarStyle: "hidden",
 		titleBarOverlay: false,
 		trafficLightPosition: { x: 18, y: 17 },

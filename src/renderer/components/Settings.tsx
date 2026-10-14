@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { Json, Profile, Provider } from "@chiselcode/desktop-sdk";
 import type { UpdateStatus } from "../../shared/bridge.js";
+import { BrandMark } from "./Brand.js";
 interface Props {
 	path?: string;
 	profiles: Profile[];
@@ -516,7 +517,7 @@ export default function Settings(props: Props) {
 					{section === "about" && (
 						<>
 							<div className="about-logo">
-								C<span>_</span>
+								<BrandMark size={32} />
 							</div>
 							<h2>ChiselCode Desktop</h2>
 							<div className="version-table">

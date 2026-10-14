@@ -18,14 +18,15 @@ import {
 	Loader2,
 	MessageSquare,
 	Minus,
+	Moon,
 	PanelRightClose,
 	PanelRightOpen,
 	Plus,
 	Search,
 	Settings2,
 	ShieldCheck,
-	Sparkles,
 	Square,
+	Sun,
 	Terminal,
 	Trash2,
 	X,
@@ -51,6 +52,7 @@ import {
 	Patch,
 } from "./components/Content.js";
 import Settings from "./components/Settings.js";
+import { BrandMark, ChiselSculpture } from "./components/Brand.js";
 interface LiveTool {
 	id: string;
 	name: string;
@@ -67,19 +69,22 @@ interface Run {
 const suggestions = [
 	{
 		icon: Search,
-		title: "Разобраться в проекте",
+		title: "Изучить проект",
+		mode: "plan" as const,
 		prompt:
 			"Изучи структуру проекта, объясни его архитектуру и основные точки входа. Пока ничего не меняй.",
 	},
 	{
 		icon: Code2,
-		title: "Найти и исправить ошибку",
+		title: "Исправить ошибку",
+		mode: "build" as const,
 		prompt:
 			"Помоги найти и исправить ошибку в проекте. Начни с изучения кода и предложи план проверки.",
 	},
 	{
 		icon: ShieldCheck,
 		title: "Проверить изменения",
+		mode: "plan" as const,
 		prompt:
 			"Проверь текущие изменения Git. Найди ошибки, риски и пропущенные проверки, со ссылками на файлы.",
 	},
@@ -133,7 +138,7 @@ export default function App() {
 	const [error, setError] = useState("");
 	const [fatal, setFatal] = useState("");
 	const [theme, setTheme] = useState(
-		localStorage.getItem("chisel:theme") ?? "dark",
+		localStorage.getItem("chisel:theme") ?? "light",
 	);
 	const [skills, setSkills] = useState<
 		{ name: string; description: string; source: string }[]
@@ -158,6 +163,15 @@ export default function App() {
 	const draft = drafts[sessionKey] ?? "";
 	const run = session ? runs[session.id] : undefined;
 	const approval = approvals.find((item) => item.requestId === approvalId);
+	const approvalPreview =
+		approval &&
+		approval.preview.trim() !==
+			(approval.diffs ?? [])
+				.map((diff) => diff.patch)
+				.join("\n")
+				.trim()
+			? approval.preview
+			: "";
 	const report = useCallback((error: unknown) => setError(text(error)), []);
 	selected.current = { path: project?.path ?? "", id: session?.id ?? "" };
 	useEffect(() => {
@@ -555,31 +569,22 @@ export default function App() {
 		),
 		...objects(tasks.background ?? {}),
 	];
+	const emptyConversation = !session?.messages.length && !run;
+	function showInspector(tab: string) {
+		setInspector(true);
+		setInspectorTab(tab);
+	}
 	return (
 		<>
 			<div
-				className="app-shell"
+				className={`app-shell ${emptyConversation ? "is-home" : "is-conversation"}`}
 				inert={settingsOpen || !!approval || !!detail ? true : undefined}
 			>
 				<header
 					className={`titlebar ${info?.platform === "darwin" ? "mac" : ""}`}
 				>
 					<div className="titlebar-brand">
-						<span className="brand-glyph">
-							<Code2 size={17} />
-						</span>
 						<strong>ChiselCode</strong>
-						<span className="desktop-label">Desktop</span>
-					</div>
-					<div className="titlebar-center">
-						{project ? (
-							<>
-								<Folder size={12} />
-								{name(project.path)}
-								<span>/</span>
-								{session?.title ?? "Новая беседа"}
-							</>
-						) : null}
 					</div>
 					{info?.platform !== "darwin" && (
 						<div className="window-controls">
@@ -604,6 +609,96 @@ export default function App() {
 						</div>
 					)}
 				</header>
+				<nav className="navigation-rail" aria-label="Навигация">
+					<button
+						className="rail-brand"
+						aria-label="Начальный экран"
+						title="Начальный экран"
+						onClick={newConversation}
+					>
+						<BrandMark size={27} />
+					</button>
+					<div className="rail-main">
+						<button
+							aria-label="Проекты"
+							title="Проекты"
+							aria-pressed={projectMenu}
+							onClick={() => setProjectMenu(!projectMenu)}
+						>
+							<FolderOpen size={20} />
+						</button>
+						<button
+							aria-label="Начать беседу"
+							title="Начать беседу"
+							aria-pressed={emptyConversation}
+							onClick={newConversation}
+						>
+							<MessageSquare size={20} />
+						</button>
+						<span className="rail-divider" />
+						<button
+							className="rail-context"
+							aria-label="Панель изменений"
+							title="Изменения"
+							aria-pressed={inspector && inspectorTab === "changes"}
+							onClick={() => showInspector("changes")}
+						>
+							<GitBranch size={20} />
+						</button>
+						<button
+							className="rail-context"
+							aria-label="Панель задач"
+							title="Задачи"
+							aria-pressed={inspector && inspectorTab === "tasks"}
+							onClick={() => showInspector("tasks")}
+						>
+							<Terminal size={20} />
+						</button>
+						<button
+							className="rail-context"
+							aria-label="Панель контекста"
+							title="Контекст"
+							aria-pressed={inspector && inspectorTab === "context"}
+							onClick={() => showInspector("context")}
+						>
+							<Command size={20} />
+						</button>
+					</div>
+					<div className="rail-bottom">
+						<button
+							aria-label="Переключить тему"
+							title="Переключить тему"
+							onClick={() =>
+								setTheme(
+									document.documentElement.dataset.theme === "dark"
+										? "light"
+										: "dark",
+								)
+							}
+						>
+							<Sun size={20} className="theme-sun" />
+							<Moon size={20} className="theme-moon" />
+						</button>
+						<button
+							aria-label="Документация"
+							title="Документация"
+							onClick={() =>
+								void window.chisel.openExternal(
+									"https://github.com/TheAsrada/ChiselCodeDesktop/blob/main/docs/README.md",
+								)
+							}
+						>
+							<BookOpen size={20} />
+						</button>
+						<button
+							aria-label="Настройки"
+							title="Настройки"
+							onClick={() => setSettingsOpen(true)}
+						>
+							<Settings2 size={20} />
+						</button>
+					</div>
+				</nav>
 				<aside className="sidebar">
 					<div className="sidebar-top">
 						<button
@@ -651,7 +746,7 @@ export default function App() {
 						</button>
 					</div>
 					<div className="sidebar-section-label">
-						БЕСЕДЫ<span>{sessions.length || ""}</span>
+						Беседы<span>{sessions.length || ""}</span>
 					</div>
 					{sessions.length > 5 && (
 						<label className="session-search">
@@ -689,24 +784,6 @@ export default function App() {
 							))}
 					</nav>
 					<div className="sidebar-bottom">
-						<button onClick={() => setSettingsOpen(true)}>
-							<Settings2 size={16} />
-							Настройки
-							<span className="shortcut">
-								{info?.platform === "darwin" ? "⌘" : "Ctrl"} ,
-							</span>
-						</button>
-						<button
-							onClick={() =>
-								void window.chisel.openExternal(
-									"https://github.com/TheAsrada/ChiselCodeDesktop/blob/main/docs/README.md",
-								)
-							}
-						>
-							<BookOpen size={16} />
-							Документация
-							<ArrowRight size={13} />
-						</button>
 						<div
 							className="engine-status"
 							data-testid="engine-status"
@@ -780,35 +857,44 @@ export default function App() {
 								);
 						}}
 					>
-						{!session?.messages.length && !run ? (
+						{emptyConversation ? (
 							<div className="welcome">
-								<div className="welcome-mark">
-									<Code2 size={38} />
-									<span />
+								<div className="project-stage">
+									<div className="stage-emblem">
+										<BrandMark size={21} />
+									</div>
+									<ChiselSculpture />
+									<div className="stage-caption">
+										<h1 title={project?.path}>
+											{project ? name(project.path) : "ChiselCode"}
+										</h1>
+										{project ? (
+											<p title={project.path}>{project.path}</p>
+										) : (
+											<button
+												className="open-project-button"
+												onClick={() => void openProject().catch(report)}
+											>
+												<FolderOpen size={17} />
+												Открыть проект
+												<ArrowRight size={16} />
+											</button>
+										)}
+									</div>
 								</div>
-								<h1>Новая беседа</h1>
-								{!project && (
-									<button
-										className="open-project-button"
-										onClick={() => void openProject().catch(report)}
-									>
-										<FolderOpen size={17} />
-										Открыть проект
-										<ArrowRight size={16} />
-									</button>
-								)}
 								<div className="suggestions">
 									{suggestions.map((item) => (
 										<button
 											key={item.title}
 											onClick={() => {
 												setDraft(item.prompt);
-												if (item.title !== "Найти и исправить ошибку")
-													setMode("plan");
+												setMode(item.mode);
 												composer.current?.focus();
 											}}
 										>
-											<item.icon size={20} />
+											<span className="suggestion-icon">
+												<item.icon size={18} />
+											</span>
 											<strong>{item.title}</strong>
 											<ArrowUp size={13} />
 										</button>
@@ -871,7 +957,9 @@ export default function App() {
 										{run.text && (
 											<article className="message message-assistant">
 												<div className="message-meta">
-													<span className="avatar">C</span>
+													<span className="avatar">
+														<BrandMark size={15} />
+													</span>
 													<strong>ChiselCode</strong>
 													<span className="streaming-label">Пишет</span>
 												</div>
@@ -1075,12 +1163,19 @@ export default function App() {
 									)}
 								</button>
 							))}
+							<button
+								className="icon-button inspector-close"
+								aria-label="Закрыть панель"
+								onClick={() => setInspector(false)}
+							>
+								<X size={16} />
+							</button>
 						</div>
 						<div className="inspector-content">
 							{inspectorTab === "changes" && (
 								<>
 									<div className="inspector-section-head">
-										<span>РАБОЧАЯ ПАПКА</span>
+										<span>Рабочая папка</span>
 										{project && (
 											<button
 												className="icon-button"
@@ -1179,7 +1274,7 @@ export default function App() {
 							{inspectorTab === "tasks" && (
 								<>
 									<div className="inspector-section-head">
-										<span>ПОМОЩНИКИ И ПРОЦЕССЫ</span>
+										<span>Помощники и процессы</span>
 									</div>
 									{taskItems.length ? (
 										taskItems.map((task, index) => (
@@ -1259,7 +1354,7 @@ export default function App() {
 							{inspectorTab === "context" && (
 								<>
 									<div className="inspector-section-head">
-										<span>ТЕКУЩАЯ БЕСЕДА</span>
+										<span>Текущая беседа</span>
 									</div>
 									<div className="context-stats">
 										<div>
@@ -1289,7 +1384,7 @@ export default function App() {
 										</div>
 									</div>
 									<div className="inspector-section-head">
-										<span>КОМАНДЫ</span>
+										<span>Команды</span>
 										<Command size={13} />
 									</div>
 									{commands
@@ -1309,8 +1404,8 @@ export default function App() {
 											</button>
 										))}
 									<div className="inspector-section-head">
-										<span>НАВЫКИ</span>
-										<Sparkles size={13} />
+										<span>Навыки</span>
+										<BookOpen size={13} />
 									</div>
 									{skills.map((skill) => (
 										<button
@@ -1374,7 +1469,7 @@ export default function App() {
 							{approval.command && (
 								<pre className="command-preview">{approval.command}</pre>
 							)}
-							<Markdown text={approval.preview} />
+							{approvalPreview && <Markdown text={approvalPreview} />}
 							{approval.diffs?.map((diff) => (
 								<div key={diff.path}>
 									<h3>

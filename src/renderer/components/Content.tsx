@@ -11,6 +11,7 @@ import {
 	X,
 } from "lucide-react";
 import type { Diff, Message } from "@chiselcode/desktop-sdk";
+import { BrandMark } from "./Brand.js";
 export const Markdown = memo(({ text }: { text: string }) => (
 	<div className="markdown">
 		<ReactMarkdown
@@ -105,7 +106,7 @@ export const MessageView = memo(({ message }: { message: Message }) => {
 				<span
 					className={`avatar ${message.role === "user" ? "user-avatar" : ""}`}
 				>
-					{message.role === "user" ? "Вы" : "C"}
+					{message.role === "user" ? "Вы" : <BrandMark size={15} />}
 				</span>
 				<strong>{message.role === "user" ? "Вы" : "ChiselCode"}</strong>
 				<button

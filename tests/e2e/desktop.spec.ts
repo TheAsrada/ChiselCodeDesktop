@@ -181,9 +181,107 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 			"data-path",
 			/desktop-project$/,
 		);
+		await expect(
+			page.getByText("Нет изменений", { exact: true }),
+		).toBeVisible();
+		await page.evaluate(() => document.fonts.ready);
 		await mkdir("docs/assets/screenshots", { recursive: true });
 		if (!packaged && process.platform === "linux")
 			await page.screenshot({ path: "docs/assets/screenshots/home.png" });
+		// Real navigation and theme changes preserve the project and draft.
+		const composer = page.getByRole("textbox", {
+			name: "Задача для ChiselCode",
+		});
+		await page
+			.getByRole("button", { name: "Изучить проект", exact: true })
+			.click();
+		await expect(
+			page.getByRole("button", { name: "Plan", exact: true }),
+		).toBeVisible();
+		await page
+			.getByRole("button", { name: "Исправить ошибку", exact: true })
+			.click();
+		await expect(
+			page.getByRole("button", { name: "Build", exact: true }),
+		).toBeVisible();
+		await composer.fill("Черновик проверки навигации");
+		await page
+			.getByRole("button", { name: "Панель задач", exact: true })
+			.click();
+		await expect(page.getByText("Нет задач", { exact: true })).toBeVisible();
+		await page
+			.getByRole("button", { name: "Панель контекста", exact: true })
+			.click();
+		await expect(
+			page.getByText("Текущая беседа", { exact: true }),
+		).toBeVisible();
+		await expect(composer).toHaveValue("Черновик проверки навигации");
+		await page
+			.getByRole("button", { name: "Панель изменений", exact: true })
+			.click();
+		await composer.fill("");
+		await page
+			.getByRole("button", { name: "Переключить тему", exact: true })
+			.click();
+		await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+		await page.reload();
+		await expect(
+			page.getByText("Нет изменений", { exact: true }),
+		).toBeVisible();
+		await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+		if (!packaged && process.platform === "linux")
+			await page.screenshot({ path: "docs/assets/screenshots/home-dark.png" });
+		await page
+			.getByRole("button", { name: "Переключить тему", exact: true })
+			.click();
+		await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+		await app.evaluate(({ BrowserWindow }) =>
+			BrowserWindow.getAllWindows()[0]!.setContentSize(1080, 760),
+		);
+		await expect.poll(() => page.evaluate(() => innerWidth)).toBe(1080);
+		await expect(composer).toBeVisible();
+		const send = page.getByRole("button", {
+			name: "Отправить задачу",
+			exact: true,
+		});
+		await expect(send).toBeVisible();
+		const sendBounds = await send.boundingBox();
+		expect(sendBounds!.y + sendBounds!.height).toBeLessThan(
+			await page.evaluate(() => innerHeight),
+		);
+		if (!packaged && process.platform === "linux")
+			await page.screenshot({
+				path: "docs/assets/screenshots/home-compact.png",
+			});
+		await app.evaluate(({ BrowserWindow }) =>
+			BrowserWindow.getAllWindows()[0]!.setContentSize(920, 700),
+		);
+		await expect.poll(() => page.evaluate(() => innerWidth)).toBe(920);
+		await page
+			.getByRole("button", { name: "Закрыть панель", exact: true })
+			.click();
+		await expect(send).toBeVisible();
+		await expect(
+			page.getByRole("button", { name: "Показать панель", exact: true }),
+		).toBeVisible();
+		if (!packaged && process.platform === "linux")
+			await page.screenshot({ path: "docs/assets/screenshots/home-small.png" });
+		await app.evaluate(({ BrowserWindow }) =>
+			BrowserWindow.getAllWindows()[0]!.setContentSize(1440, 960),
+		);
+		await expect.poll(() => page.evaluate(() => innerWidth)).toBe(1440);
+		await page
+			.getByRole("button", { name: "Панель изменений", exact: true })
+			.click();
+		await page.getByRole("button", { name: "Настройки", exact: true }).click();
+		await page
+			.getByRole("button", { name: "Внешний вид", exact: true })
+			.click();
+		if (!packaged && process.platform === "linux")
+			await page.screenshot({ path: "docs/assets/screenshots/settings.png" });
+		await page
+			.getByRole("button", { name: "Закрыть настройки", exact: true })
+			.click();
 		await page
 			.getByRole("textbox", { name: "Задача для ChiselCode" })
 			.fill("WRITE: создай файл desktop.txt для проверки desktop.");
@@ -193,6 +291,14 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 		await expect(
 			page.getByRole("dialog", { name: "Подтверждение действия" }),
 		).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: "Index: desktop.txt", exact: true }),
+		).toHaveCount(0);
+		await expect(
+			page
+				.getByRole("dialog", { name: "Подтверждение действия" })
+				.locator(".patch"),
+		).toContainText("+ChiselCode Desktop ✓");
 		await expect(readFile(join(project, "desktop.txt"))).rejects.toThrow();
 		if (!packaged && process.platform === "linux")
 			await page.screenshot({ path: "docs/assets/screenshots/approval.png" });
