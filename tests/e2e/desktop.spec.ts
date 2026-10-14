@@ -172,8 +172,8 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 			.click();
 		// Seed an existing project using the actual preload/engine API; no mocked dialog/backend.
 		await page.evaluate(async (path) => {
-			await window.chisel.request("projects/open", { path });
-			localStorage.setItem("chisel:last-project", path);
+				const project = await window.chisel.request("projects/open", { path });
+				localStorage.setItem("chisel:last-project", project.path);
 		}, project);
 		await page.reload();
 		await expect(
