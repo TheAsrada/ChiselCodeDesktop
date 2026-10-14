@@ -8,6 +8,14 @@
 
 Локально 14.10.2026 прошли TypeScript, все три architecture/release tests и production build (`npm run verify`), настоящий source GUI и полный GUI acceptance из вновь собранных beta.3 Linux deb/AppImage. Проверены навигация с черновиком, темы после перезапуска, компактные окна, stream, запись только после разрешения, отказ, отмена и durable resume. SHA-256 локального engine совпал с `engine.lock.json`.
 
+[Native main CI 38523657808](https://github.com/TheAsrada/ChiselCodeDesktop/actions/runs/38523657808) прошёл все четыре платформы до создания тега. [Релизный workflow 38524283968](https://github.com/TheAsrada/ChiselCodeDesktop/actions/runs/38524283968) повторно прошёл четыре native GUI/installer jobs и публикацию. Оба относятся к source commit `277d64c2eff3256531899498696199cebd96325b`; тег `v0.1.0-beta.3` указывает на тот же commit.
+
+[Desktop 0.1.0-beta.3](https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.3) опубликован 14.10.2026 в 06:55 UTC, `draft=false`, `prerelease=true`. В релизе **7 установщиков и 17 assets**: Windows NSIS, Linux deb/AppImage, macOS DMG/ZIP для arm64/x64, blockmaps, три updater metadata, `release-manifest.json` и `SHA256SUMS`.
+
+После публикации все 12 SHA-256 установщиков/blockmap и размеры сверены с GitHub asset digests; все 12 записей SHA256SUMS совпали с manifest. Сверены версии, наборы файлов, размеры и SHA-512 в `beta.yml`, `beta-mac.yml`, `beta-linux.yml`; SHA-256 пяти опубликованных metadata/checksum файлов проверены по скачанным байтам. Desktop source и весь engine lock совпадают с проверенной парой beta.3/ChiselCode 0.6.29. Издательская подпись Windows и Apple notarization в этом выпуске не добавлены.
+
+Последующий документационный commit в `main` не меняет source опубликованного тега и не требует перезаписи release assets.
+
 ## Автоматические критерии
 
 | Проверка | Что подтверждает |
