@@ -1,0 +1,115 @@
+name: Desktop
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Build and installed GUI (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: win32-x64
+            args: --win --x64
+          - os: ubuntu-latest
+            target: linux-x64
+            args: --linux --x64
+          - os: macos-latest
+            target: darwin-arm64
+            args: --mac --arm64
+          - os: macos-15-intel
+            target: darwin-x64
+            args: --mac --x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Download and verify the pinned engine, SDK and skills
+        run: node scripts/sync-engine.mjs ${{ matrix.target }}
+      - run: npm ci
+      - name: Validate tag and source versions
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - run: npm run verify
+      - name: GUI acceptance from source (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a npm run test:e2e
+      - name: GUI acceptance from source (Windows/macOS)
+        if: runner.os != 'Linux'
+        run: npm run test:e2e
+      - name: Build native installers
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder ${{ matrix.args }} --publish never
+      - name: Verify installed payload (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a node scripts/verify-installers.mjs
+      - name: Verify installed payload (Windows/macOS)
+        if: runner.os != 'Linux'
+        run: node scripts/verify-installers.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.target }}
+          path: |
+            release/*.exe
+            release/*.dmg
+            release/*.zip
+            release/*.deb
+            release/*.AppImage
+            release/*.blockmap
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gui-evidence-${{ matrix.target }}
+          path: |
+            test-results
+            playwright-report
+            docs/assets/screenshots
+          retention-days: 14
+  release:
+    name: Publish the verified desktop release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-*
+          path: release
+          merge-multiple: true
+      - run: node scripts/prepare-release.mjs
+      - name: Create a draft, upload the complete set, publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="$GITHUB_REF_NAME"
+          test "v$(node -p "require('./package.json').version")" = "$tag"
+          if gh release view "$tag" --json isDraft >/dev/null 2>&1; then
+            test "$(gh release view "$tag" --json isDraft --jq .isDraft)" = true
+          else
+            gh release create "$tag" --verify-tag --draft --prerelease --title "ChiselCode Desktop $tag" --notes-file release/release-notes.md
+          fi
+          files=(release/*.exe release/*.dmg release/*.zip release/*.AppImage release/*.deb release/*.blockmap release/*.yml release/release-manifest.json release/SHA256SUMS)
+          gh release upload "$tag" "${files[@]}" --clobber
+          test "$(gh release view "$tag" --json assets --jq '.assets | length')" -eq "${#files[@]}"
+          gh release edit "$tag" --draft=false --prerelease --notes-file release/release-notes.md
