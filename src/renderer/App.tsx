@@ -790,7 +790,6 @@ export default function App() {
 							data-state={ready ? "ready" : fatal ? "error" : "starting"}
 							title="Версия ядра ChiselCode"
 						>
-							<span className={`status-dot ${ready ? "" : "offline"}`} />
 							<span>
 								{ready
 									? info?.engine.engineVersion
@@ -1455,9 +1454,6 @@ export default function App() {
 						className="approval-modal"
 					>
 						<div className="approval-modal-head">
-							<span>
-								<ShieldCheck size={22} />
-							</span>
 							<div>
 								<h2>Подтвердить действие</h2>
 								<p>

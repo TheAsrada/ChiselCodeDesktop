@@ -330,9 +330,6 @@ p {
 	background: var(--green);
 	flex-shrink: 0;
 }
-.status-dot.offline {
-	background: var(--amber);
-}
 .workspace {
 	background: var(--bg);
 	border-radius: 32px;

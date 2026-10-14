@@ -1,6 +1,12 @@
-# Проверки первой beta
+# Проверки Desktop
 
 Тестируется настоящий Electron, ограниченный preload, автономный compiled engine ChiselCode и общий runtime/tools/storage. Для воспроизводимости модель — локальный OpenAI-compatible HTTP fixture; ответы настоящих внешних моделей и оплачиваемые API не участвовали в acceptance.
+
+## 0.1.0-beta.3
+
+Выпуск включает новое оформление, подтверждение без оранжевого щита и номер ядра без зелёной точки. Ядро остаётся ChiselCode 0.6.29 с source commit `b9fc6dfcc6c62743c65a5bb311ccb5e8ca7d679f`, protocol 1.0 и прежними общими sessions/profiles. Терминальная версия в этой задаче не изменяется.
+
+Локально 14.10.2026 прошли TypeScript, все три architecture/release tests и production build (`npm run verify`), настоящий source GUI и полный GUI acceptance из вновь собранных beta.3 Linux deb/AppImage. Проверены навигация с черновиком, темы после перезапуска, компактные окна, stream, запись только после разрешения, отказ, отмена и durable resume. SHA-256 локального engine совпал с `engine.lock.json`.
 
 ## Автоматические критерии
 
@@ -11,6 +17,8 @@
 | Установленный payload | Тот же сценарий после NSIS install, deb/AppImage extract, DMG mount/copy и ZIP extract |
 | Core process acceptance | Реальный JSON-RPC/SDK, согласование major, credentials redaction, допуск второго процесса, durable resume, сохранённый результат команды и настоящий background process с live output/stop |
 | Pinned download + release manifest | Совпадение SHA-256 engine/SDK/skills, происхождение source commit, полный набор установщиков |
+
+## 0.1.0-beta.2 и общий engine
 
 Linux source, упакованный GUI и payload deb/AppImage прошли локально. [Финальная релизная матрица](https://github.com/TheAsrada/ChiselCodeDesktop/actions/runs/38508734884) прошла source GUI и установленный payload для Windows x64, Linux x64, macOS arm64 и x64. Она включает интерфейс без слоганов и постоянных подсказок. [Desktop 0.1.0-beta.2](https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.2) опубликован из commit `f5ea6eab9c08be163d4bb891612ba4facbe16094`.
 
@@ -24,7 +32,7 @@ Core дополнительно выполняет runtime evaluation и packagi
 
 ## Настоящие кадры
 
-Кадры получены GUI acceptance, с локальным тестовым профилем и тестовым проектом. Они показывают работающее приложение, а не дизайн-макет.
+Кадры beta.3 получены GUI acceptance с локальным тестовым профилем и тестовым проектом. Они показывают работающее приложение, а не дизайн-макет. Исторические результаты beta.2 выше относятся к указанному source commit и его прежнему интерфейсу.
 
 ![Начало работы](assets/screenshots/home.png)
 ![Подтверждение изменения](assets/screenshots/approval.png)
