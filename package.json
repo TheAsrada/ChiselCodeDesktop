@@ -1,6 +1,6 @@
 {
 	"name": "chiselcode-desktop",
-	"version": "0.1.0-beta.1",
+	"version": "0.1.0-beta.2",
 	"description": "ChiselCode Desktop — графический клиент общего ядра ChiselCode",
 	"private": true,
 	"type": "module",

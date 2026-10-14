@@ -200,7 +200,7 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 			.getByRole("button", { name: "Разрешить один раз", exact: true })
 			.click();
 		await expect(
-			page.getByRole("heading", { name: "desktop.txt" }),
+			page.getByRole("heading", { name: "desktop.txt", exact: true, level: 2 }),
 		).toBeVisible();
 		await expect
 			.poll(async () => readFile(join(project, "desktop.txt"), "utf8"))
@@ -216,7 +216,7 @@ test("real desktop configures a model, streams, approves/denies/cancels and resu
 		).toBeVisible();
 		await page.getByRole("button", { name: /WRITE: создай файл/ }).click();
 		await expect(
-			page.getByRole("heading", { name: "desktop.txt" }),
+			page.getByRole("heading", { name: "desktop.txt", exact: true, level: 2 }),
 		).toBeVisible();
 		await page.getByRole("button", { name: /Новая беседа/ }).click();
 		await page

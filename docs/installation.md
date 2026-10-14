@@ -1,6 +1,6 @@
 # Установка и обновление
 
-[Выпуски и установщики](https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.1).
+[Выпуски и установщики](https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.2).
 
 | Платформа | Файл |
 |---|---|

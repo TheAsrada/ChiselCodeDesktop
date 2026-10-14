@@ -6,7 +6,9 @@
 
 Будущие изменения добавляются сюда вместе с реализацией и подтверждёнными проверками. Планы находятся в roadmap и не считаются выпущенными возможностями.
 
-## [0.1.0-beta.1] - 2026-10-14
+## [0.1.0-beta.2] - 2026-10-14
+
+Первый опубликованный beta-выпуск. Тег beta.1 был промежуточным; релиз с ним не публиковался.
 
 ### Добавлено
 
@@ -27,5 +29,5 @@
 - Графические действия для сохранённых помощников и подробного вывода фоновых задач требуют следующего этапа. Их состояние и результаты core-инструментов доступны в беседе.
 - Параллельные linked worktrees в разных процессах используют общий консервативный допуск Git.
 
-[Unreleased]: https://github.com/TheAsrada/ChiselCodeDesktop/compare/v0.1.0-beta.1...main
-[0.1.0-beta.1]: https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.1
+[Unreleased]: https://github.com/TheAsrada/ChiselCodeDesktop/compare/v0.1.0-beta.2...main
+[0.1.0-beta.2]: https://github.com/TheAsrada/ChiselCodeDesktop/releases/tag/v0.1.0-beta.2
