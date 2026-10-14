@@ -16,6 +16,8 @@
 
 Выполнены штатные `update:engine -- v0.6.30`, `sync:engine`, `npm ci`. Временный candidate vendor заменён опубликованными файлами; настоящий lock содержит protocol 1.1 / SDK 1.1.0 и шесть hashes. Без candidate override прошли `npm run verify` и оба Electron source GUI сценария на Linux. Сохранённые кадры нового раздела обновлены этим прогоном. `npm run package` собрал Linux deb и AppImage; `node scripts/verify-installers.mjs` прошёл оба GUI сценария из каждого извлечённого payload. Native desktop matrix и публикация фиксируются после завершения; этот локальный результат не объявляет Windows/macOS проверенными.
 
+Первый Desktop main CI на `be02bd2` выявил неверное сравнение исходного alias path с canonical DTO на Windows/macOS: engine сохранял правильный проект. Fixture теперь сравнивает точный `projects/open.path`, не повторяя нормализацию в renderer. На macOS Intel первый Electron launch застал незавершённую lazy installation; `test:e2e` теперь сначала запускает штатный installer закреплённого Electron с checksums. Assertions пользовательского сценария сохранены; итоговая native matrix требуется на новом source.
+
 ![Светлая тема](assets/screenshots/extensions-catalog-light.png)
 ![Проверка пакета](assets/screenshots/extensions-review.png)
 ![Параметры](assets/screenshots/extensions-settings.png)

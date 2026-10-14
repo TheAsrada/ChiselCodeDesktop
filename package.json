@@ -14,7 +14,7 @@
 		"build": "tsc --noEmit && vite build && esbuild src/main/index.ts src/main/preload.ts --bundle --platform=node --format=cjs --external:electron --external:electron-updater --outdir=dist/main --out-extension:.js=.cjs && node scripts/finish-build.mjs",
 		"typecheck": "tsc --noEmit",
 		"test": "node --test tests/*.test.mjs",
-		"test:e2e": "playwright test",
+		"test:e2e": "node node_modules/electron/install.js && playwright test",
 		"package": "npm run build && electron-builder --publish never",
 		"package:dir": "npm run build && electron-builder --dir --publish never",
 		"verify": "npm run typecheck && npm test && npm run build",

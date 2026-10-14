@@ -162,7 +162,7 @@ test("real extension lifecycle in Electron uses one core installer, settings, ve
 	};
 	try {
 		await launch();
-		await page.evaluate(
+		const canonicalProject = await page.evaluate(
 			async ({ project, port }) => {
 				await window.chisel.request("profiles/save", {
 					id: "fixture",
@@ -176,13 +176,14 @@ test("real extension lifecycle in Electron uses one core installer, settings, ve
 					path: project,
 				});
 				localStorage.setItem("chisel:last-project", value.path);
+				return value.path;
 			},
 			{ project, port },
 		);
 		await page.reload();
 		await expect(page.getByTestId("project-picker")).toHaveAttribute(
 			"data-path",
-			project,
+			canonicalProject,
 		);
 		await page
 			.getByRole("textbox", { name: "Задача для ChiselCode" })

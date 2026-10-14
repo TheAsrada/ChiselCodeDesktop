@@ -33,6 +33,8 @@ Linux GUI в CI запускается через `xvfb-run`. Тесты зап�
 
 При изменении поведения обновляйте документацию и Unreleased CHANGELOG. При wire change сначала меняйте контракт в ChiselCode, затем выпускайте SDK/engine, обновляйте lock и клиент. SDK files руками не редактируются.
 
+`npm run test:e2e` перед Playwright завершает установку закреплённого Electron binary штатным installer с checksums. Это исключает гонку первого запуска после `npm ci`. Ожидаемый путь проекта в GUI берите из DTO `projects/open`: engine возвращает canonical identity, включая Windows long/lowercase paths и macOS `/private` aliases; frontend не повторяет нормализацию.
+
 ## Source candidate ядра
 
 До core release соберите engine/SDK из текущего соседнего ChiselCode и временно поместите их в игнорируемый vendor. `CHISEL_DESKTOP_CANDIDATE_LOCK` может указывать отдельную dev metadata с фактической candidate version/protocol; путь применяется только к непакетному запуску. Production handshake не отключается, настоящий engine.lock.json сохраняется. Укажите source commit и локальные правки в отчёте. После публикации выполните update:engine/sync:engine/npm ci и повторите GUI/payload с опубликованными bytes по [desktop-sync](https://github.com/TheAsrada/ChiselCode/blob/main/docs/contributors/desktop-sync.md).
