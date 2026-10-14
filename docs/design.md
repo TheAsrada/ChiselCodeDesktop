@@ -58,6 +58,8 @@ GUI acceptance выполняет настоящий model/tool loop с запи
 
 Локально 14.10.2026 прошли `npm run verify` (TypeScript, три архитектурные/release проверки и сборка), исходный Electron GUI и полный GUI-сценарий из заново собранных Linux `.deb` и AppImage. SHA-256 встроенного engine совпадает с `engine.lock.json`. Проверка установщиков выбирает точную текущую версию, даже если рядом сохранены старые файлы.
 
+[Native CI 38520165799](https://github.com/TheAsrada/ChiselCodeDesktop/actions/runs/38520165799) на исходниках `e70c5fc41e35d06c00e8281daa01330c19181040` завершился успешно во всех четырёх jobs: Windows x64, Linux x64, macOS arm64/x64. Каждая платформа прошла TypeScript/архитектурные проверки, реальный исходный GUI, упаковку и GUI из установленных payload. Проверены NSIS, Linux deb/AppImage и macOS DMG/ZIP обеих архитектур. Публикация release для push в `main` пропущена штатно; нового публичного выпуска в этой задаче нет. Последующие изменения этой документации и AGENTS.md не меняют проверенный runtime source.
+
 ![Начальный экран](assets/screenshots/home.png)
 ![Тёмная тема](assets/screenshots/home-dark.png)
 ![Беседа с настоящим результатом инструмента](assets/screenshots/chat.png)
